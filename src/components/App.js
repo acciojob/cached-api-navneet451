@@ -1,5 +1,6 @@
 
 import React,{useState} from "react";
+import PostFetcher from './PostFetcher';
 import './../styles/App.css';
 
 const App = () => {
