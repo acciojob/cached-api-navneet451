@@ -1,51 +1,48 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from "react";
 
-// The component that fetches and displays data
-const PostFetcher = ({ userId }) => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const FetchedPosts = () => {
+  const [userId, setUserId] = useState("");
+  const [post, setPost] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // useMemo hook to cache the fetched data
-  const fetchPosts = useMemo(() => {
-    return async () => {
-      setLoading(true); // Start loading
-      try {
-        const response = await fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`);
-        const data = await response.json();
-        setPosts(data); // Set the fetched data
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false); // Stop loading
-      }
-    };
-  }, [userId]); // The fetch function is re-generated if the userId changes
-
-  // useEffect hook to trigger the fetch when the component mounts or the userId changes
-  useEffect(() => {
-    fetchPosts(); // Fetch data when userId changes or component mounts
-  }, [fetchPosts]); // Dependency array includes fetchPosts to re-run when userId changes
-
-  // Rendering the component
+  const handleChange = (e) => {
+    setUserId(Number(e.target.value));
+  };
+  const handleSubmit = async () => {
+    setLoading(true);
+    const response = await fetch(
+      `https://jsonplaceholder.typicode.com/posts?userId=${userId}`
+    );
+    const data = await response.json();
+    setPost(data);
+    setLoading(false);
+    setUserId("");
+  };
   return (
     <div>
-      <h1>Posts for User ID: {userId}</h1>
-      
+      <input
+        type="number"
+        placeholder="enter userId"
+        value={userId}
+        onChange={handleChange}
+      />
+      <button onClick={handleSubmit}>Get Posts</button>
       {loading ? (
-        <p>Loading posts...</p>
+        <p>Loading....</p>
       ) : (
         <ul>
-          {posts.map((post) => (
-            <li key={post.id}>
-              <h2>{post.title}</h2>
-              <p>{post.body}</p>
-            </li>
-          ))}
+          {post.map((posts) => {
+            return (
+              <li key={posts.id}>
+                <h3>{posts.title}</h3>
+                <p>{posts.body}</p>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
   );
 };
 
-export default PostFetcher;
-
+export default FetchedPosts;
